@@ -2,11 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ProFix · Управление поручениями</title>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* ----- ТЕМЫ ----- */
         :root {
             --bg: #f8fafc;
             --surface: #ffffff;
@@ -27,7 +27,6 @@
             --past-meeting: #d1fae5;
             --hover-bg: #e2e8f0;
         }
-
         body.dark {
             --bg: #0f172a;
             --surface: #1e293b;
@@ -48,22 +47,22 @@
             --past-meeting: #064e3b;
             --hover-bg: #334155;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
         }
-
         body {
             background-color: var(--bg);
             color: var(--text);
-            min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
             display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* ---------- МЕНЮ ---------- */
         .menu {
             width: 280px;
             background-color: var(--menu-bg);
@@ -73,9 +72,10 @@
             flex-direction: column;
             gap: 0.5rem;
             box-shadow: var(--shadow);
-            z-index: 10;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
         }
-
         .logo {
             font-size: 2rem;
             font-weight: 700;
@@ -84,11 +84,7 @@
             padding-left: 1rem;
             letter-spacing: -0.5px;
         }
-
-        .logo span {
-            color: var(--text);
-        }
-
+        .logo span { color: var(--text); }
         .menu-item {
             padding: 0.75rem 1.5rem;
             border-radius: 1rem;
@@ -100,31 +96,21 @@
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
         }
-
         .menu-item i {
             width: 1.5rem;
             font-size: 1.2rem;
             color: var(--text-light);
         }
-
         .menu-item:hover {
             background-color: var(--primary);
             color: white;
         }
-
-        .menu-item:hover i {
-            color: white;
-        }
-
+        .menu-item:hover i { color: white; }
         .menu-item.active {
             background-color: var(--primary);
             color: white;
         }
-
-        .menu-item.active i {
-            color: white;
-        }
-
+        .menu-item.active i { color: white; }
         .profile-section {
             margin-top: auto;
             padding: 1rem 1rem 0;
@@ -133,7 +119,6 @@
             align-items: center;
             gap: 0.75rem;
         }
-
         .avatar {
             width: 40px;
             height: 40px;
@@ -146,31 +131,71 @@
             font-weight: bold;
             font-size: 1.2rem;
         }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-name {
-            font-weight: 600;
-        }
-
+        .user-info { flex: 1; }
+        .user-name { font-weight: 600; }
         .user-edit {
             font-size: 0.8rem;
             color: var(--text-light);
             cursor: pointer;
         }
+        .user-edit:hover { color: var(--primary); }
 
-        .user-edit:hover {
-            color: var(--primary);
+        /* ---------- БУРГЕР И АДАПТИВ ---------- */
+        .burger {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1002;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            width: 48px;
+            height: 48px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        @media (max-width: 768px) {
+            .burger { display: flex; }
+            .menu {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                transform: translateX(-100%);
+                z-index: 1001;
+            }
+            .menu.open { transform: translateX(0); }
+            .overlay.active { display: block; }
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+                margin-top: 70px;
+            }
+        }
+        @media (min-width: 769px) {
+            .menu { transform: translateX(0); }
+            .content { padding: 2rem 3rem; }
         }
 
-        .content {
-            flex: 1;
-            padding: 2rem 3rem;
-            overflow-y: auto;
-        }
-
+        /* ---------- ОБЩИЕ СТИЛИ ---------- */
+        .content { flex: 1; overflow-y: auto; transition: padding 0.3s; }
         .card {
             background-color: var(--surface);
             border-radius: 1.5rem;
@@ -178,7 +203,6 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
         }
-
         h2 {
             font-size: 1.8rem;
             font-weight: 600;
@@ -187,25 +211,20 @@
             align-items: center;
             gap: 0.5rem;
         }
-
-        h2 i {
-            color: var(--primary);
-        }
-
+        h2 i { color: var(--primary); }
         h3 {
             font-size: 1.4rem;
             margin: 1.5rem 0 1rem;
             color: var(--text);
         }
-
         .sub-tabs {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 2rem;
             border-bottom: 1px solid var(--border);
             padding-bottom: 0.5rem;
+            flex-wrap: wrap;
         }
-
         .sub-tab {
             padding: 0.5rem 1.5rem;
             border-radius: 2rem;
@@ -215,24 +234,18 @@
             background-color: var(--surface);
             border: 1px solid var(--border);
         }
-
         .sub-tab.active {
             background-color: var(--primary);
             color: white;
             border-color: var(--primary);
         }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
+        .form-group { margin-bottom: 1.5rem; }
         label {
             display: block;
             font-weight: 500;
             margin-bottom: 0.5rem;
             color: var(--text-light);
         }
-
         input, select, textarea {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -243,18 +256,12 @@
             font-size: 1rem;
             transition: border 0.2s, box-shadow 0.2s;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
         }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
+        textarea { min-height: 100px; resize: vertical; }
         button {
             background-color: var(--primary);
             color: white;
@@ -268,82 +275,53 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            border: 1px solid transparent;
         }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
+        button:hover { background-color: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
         button.secondary {
             background-color: transparent;
             border: 1px solid var(--border);
             color: var(--text);
         }
-
-        button.secondary:hover {
-            background-color: var(--border);
-        }
-
+        button.secondary:hover { background-color: var(--border); }
         button.success {
             background-color: var(--success);
         }
-
-        button.success:hover {
-            background-color: var(--success-hover);
-        }
-
-        button.danger {
-            background-color: var(--danger);
-        }
-
+        button.success:hover { background-color: var(--success-hover); }
+        button.danger { background-color: var(--danger); }
         .button-group {
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
             margin-top: 1rem;
         }
-
         .table-wrapper {
             overflow-x: auto;
             border-radius: 1rem;
             border: 1px solid var(--border);
             margin-top: 1.5rem;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: var(--surface);
         }
-
         th, td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
-
         th {
             background-color: var(--menu-bg);
             font-weight: 600;
             color: var(--text-light);
         }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
         .directions-grid, .meeting-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 1rem;
             margin: 1.5rem 0;
         }
-
         .direction-card, .meeting-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border);
@@ -353,25 +331,21 @@
             transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: var(--shadow);
         }
-
         .direction-card:hover, .meeting-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
         }
-
         .direction-name, .meeting-title {
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 0.8rem;
         }
-
         .stats {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
             margin: 0.5rem 0;
         }
-
         .stat-badge {
             padding: 0.2rem 0.8rem;
             border-radius: 2rem;
@@ -379,12 +353,6 @@
             font-weight: 600;
             color: white;
         }
-
-        .stat-done { background-color: var(--success); }
-        .stat-progress { background-color: var(--info); }
-        .stat-overdue { background-color: var(--danger); }
-        .stat-pending { background-color: var(--warning); color: black; }
-
         .meeting-meta {
             display: flex;
             justify-content: space-between;
@@ -392,7 +360,6 @@
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
         }
-
         .meeting-direction {
             background-color: var(--primary);
             color: white;
@@ -401,7 +368,6 @@
             font-size: 0.8rem;
             display: inline-block;
         }
-
         .delete-meeting-btn {
             color: var(--danger);
             background: transparent;
@@ -410,11 +376,7 @@
             cursor: pointer;
             padding: 0.2rem 0.5rem;
         }
-
-        .delete-meeting-btn:hover {
-            color: var(--danger-hover);
-        }
-
+        .delete-meeting-btn:hover { color: var(--danger-hover); }
         .breadcrumbs {
             display: flex;
             gap: 0.5rem;
@@ -425,21 +387,12 @@
             padding: 0.5rem 1rem;
             border-radius: 3rem;
         }
-
         .breadcrumb-item {
             color: var(--primary);
             cursor: pointer;
             font-weight: 500;
         }
-
-        .breadcrumb-item:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumb-separator {
-            color: var(--text-light);
-        }
-
+        .breadcrumb-item:hover { text-decoration: underline; }
         .calendar-header {
             display: flex;
             align-items: center;
@@ -447,23 +400,16 @@
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
-
         .month-nav {
             display: flex;
             gap: 1rem;
             align-items: center;
         }
-
-        .month-nav button {
-            padding: 0.5rem 1.5rem;
-        }
-
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 0.5rem;
         }
-
         .calendar-day {
             background-color: var(--surface);
             border: 1px solid var(--border);
@@ -473,16 +419,8 @@
             display: flex;
             flex-direction: column;
         }
-
-        .calendar-day.past {
-            background-color: var(--past-meeting);
-        }
-
-        .day-number {
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-
+        .calendar-day.past { background-color: var(--past-meeting); }
+        .day-number { font-weight: 600; margin-bottom: 0.3rem; }
         .day-meeting {
             background-color: var(--primary);
             color: white;
@@ -495,7 +433,6 @@
             align-items: center;
             cursor: pointer;
         }
-
         .meeting-count {
             background-color: white;
             color: black;
@@ -508,10 +445,8 @@
             justify-content: center;
             font-weight: 600;
         }
-
         .count-zero { background-color: var(--danger); color: white; }
         .count-nonzero { background-color: var(--info); color: white; }
-
         .config-block {
             margin-top: 2rem;
             padding: 1.5rem;
@@ -519,29 +454,20 @@
             border-radius: 1rem;
             border: 1px solid var(--border);
         }
-
-        .file-input {
-            display: none;
-        }
-
+        .file-input { display: none; }
         .flex-row {
             display: flex;
             gap: 1rem;
             align-items: center;
             flex-wrap: wrap;
         }
-
-        .mt-2 { margin-top: 1rem; }
-        .ml-auto { margin-left: auto; }
         .text-small { font-size: 0.9rem; color: var(--text-light); }
-
         .direction-list {
             margin: 1.5rem 0;
             border: 1px solid var(--border);
             border-radius: 1rem;
             overflow: hidden;
         }
-
         .direction-item {
             display: flex;
             align-items: center;
@@ -550,16 +476,7 @@
             border-bottom: 1px solid var(--border);
             background-color: var(--surface);
         }
-
-        .direction-item:last-child {
-            border-bottom: none;
-        }
-
-        .direction-item button {
-            padding: 0.4rem 0.8rem;
-            margin-left: 0.5rem;
-        }
-
+        .direction-item:last-child { border-bottom: none; }
         .date-header {
             font-size: 1.5rem;
             font-weight: 600;
@@ -568,7 +485,6 @@
             margin-bottom: 1rem;
             color: var(--primary);
         }
-
         .status-select {
             padding: 0.3rem 1rem;
             border-radius: 2rem;
@@ -576,58 +492,31 @@
             background-color: var(--bg);
             color: var(--text);
         }
-
-        /* Дашборд */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .dashboard-card {
-            background-color: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 1.2rem;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-        }
-
-        .dashboard-card h3 {
-            margin-top: 0;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding: 0.3rem 0;
-            border-bottom: 1px dashed var(--border);
-        }
-
-        .color-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 0.3rem;
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: repeat(7, minmax(40px, 1fr));
+                gap: 0.25rem;
+            }
+            .calendar-day { min-height: 80px; padding: 0.4rem; }
+            .day-meeting { font-size: 0.65rem; }
+            .card { padding: 1rem; }
+            h2 { font-size: 1.4rem; }
         }
     </style>
 </head>
 <body>
-    <div class="menu">
-        <div class="logo">Pro<span>Fix</span></div>
+    <button class="burger" id="burgerBtn"><i class="fas fa-bars"></i></button>
+    <div class="overlay" id="overlay"></div>
 
-        <div class="menu-item active" data-tab="dashboard"><i class="fas fa-chart-pie"></i><span>Дашборд</span></div>
+    <div class="menu" id="menu">
+        <div class="logo">Pro<span>Fix</span></div>
+        <div class="menu-item active" data-tab="dashboard"><i class="fas fa-chart-line"></i><span>Дашборд</span></div>
         <div class="menu-item" data-tab="calendar"><i class="fas fa-calendar-alt"></i><span>Календарь</span></div>
         <div class="menu-item" data-tab="summary"><i class="fas fa-list"></i><span>Свод поручений</span></div>
         <div class="menu-item" data-tab="create-meeting"><i class="fas fa-calendar-plus"></i><span>Заведение встреч</span></div>
         <div class="menu-item" data-tab="backup"><i class="fas fa-database"></i><span>Бэкап</span></div>
         <div class="menu-item" data-tab="settings"><i class="fas fa-cog"></i><span>Настройки</span></div>
-
-        <div class="profile-section" id="profileSection">
+        <div class="profile-section">
             <div class="avatar" id="avatar">U</div>
             <div class="user-info">
                 <div class="user-name" id="userNameDisplay">Пользователь</div>
@@ -639,933 +528,772 @@
     <div class="content" id="content"></div>
 
     <script>
-        (function() {
-            const STORAGE_ASSIGNMENTS = 'assignments';
-            const STORAGE_MEETINGS = 'meetings';
-            const STORAGE_DIRECTIONS = 'directions';
-            const STORAGE_USERS = 'users';
-            const STORAGE_STATUSES = 'statuses';
-            const STORAGE_STATUS_COLORS = 'statusColors'; // новый
-            const STORAGE_USER_NAME = 'userName';
-            const STORAGE_THEME = 'theme';
+        // ==================== ХРАНИЛИЩА ====================
+        const STORAGE_ASSIGNMENTS = 'assignments';
+        const STORAGE_MEETINGS = 'meetings';
+        const STORAGE_DIRECTIONS = 'directions';
+        const STORAGE_USERS = 'users';
+        const STORAGE_STATUSES = 'statuses';
+        const STORAGE_STATUS_COLORS = 'statusColors';
+        const STORAGE_USER_NAME = 'userName';
+        const STORAGE_THEME = 'theme';
 
-            const defaultDirections = [
-                { name: 'Работа', prefix: 'WORK', lastNumber: 0 },
-                { name: 'Личное', prefix: 'PERS', lastNumber: 0 },
-                { name: 'Учеба', prefix: 'STUDY', lastNumber: 0 },
-            ];
+        // Начальные данные
+        const defaultDirections = [
+            { name: 'Работа', prefix: 'WORK', lastNumber: 0 },
+            { name: 'Личное', prefix: 'PERS', lastNumber: 0 },
+            { name: 'Учеба', prefix: 'STUDY', lastNumber: 0 },
+        ];
+        const defaultUsers = ['Иванов', 'Петров', 'Сидорова'];
+        const defaultStatuses = ['активно', 'в работе', 'выполнено', 'просрочено'];
+        const defaultStatusColors = {
+            'активно': '#f59e0b',
+            'в работе': '#3b82f6',
+            'выполнено': '#10b981',
+            'просрочено': '#ef4444'
+        };
+        const defaultMeetings = [
+            { id: 'm1', title: 'Еженедельная планерка', date: new Date().toISOString().split('T')[0], direction: 'Работа', description: 'Обсуждение текущих задач' },
+            { id: 'm2', title: 'Защита проекта', date: new Date().toISOString().split('T')[0], direction: 'Учеба', description: 'Защита дипломного проекта' },
+        ];
 
-            const defaultUsers = ['Иванов', 'Петров', 'Сидорова'];
-            const defaultStatuses = ['активно', 'в работе', 'выполнено', 'просрочено'];
-            const defaultStatusColors = {
-                'активно': '#f59e0b',
-                'в работе': '#3b82f6',
-                'выполнено': '#10b981',
-                'просрочено': '#ef4444'
+        // Загрузка
+        function loadDirections() {
+            const data = localStorage.getItem(STORAGE_DIRECTIONS);
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === 'string') {
+                        const newDirs = parsed.map((name, i) => ({ name, prefix: name.slice(0,4).toUpperCase() + i, lastNumber: 0 }));
+                        localStorage.setItem(STORAGE_DIRECTIONS, JSON.stringify(newDirs));
+                        return newDirs;
+                    }
+                    return parsed;
+                } catch { return defaultDirections; }
+            }
+            localStorage.setItem(STORAGE_DIRECTIONS, JSON.stringify(defaultDirections));
+            return defaultDirections;
+        }
+        function loadUsers() {
+            const data = localStorage.getItem(STORAGE_USERS);
+            if (data) { try { return JSON.parse(data); } catch { return defaultUsers; } }
+            localStorage.setItem(STORAGE_USERS, JSON.stringify(defaultUsers));
+            return defaultUsers;
+        }
+        function loadStatuses() {
+            const data = localStorage.getItem(STORAGE_STATUSES);
+            if (data) { try { return JSON.parse(data); } catch { return defaultStatuses; } }
+            localStorage.setItem(STORAGE_STATUSES, JSON.stringify(defaultStatuses));
+            return defaultStatuses;
+        }
+        function loadStatusColors() {
+            const data = localStorage.getItem(STORAGE_STATUS_COLORS);
+            if (data) { try { return JSON.parse(data); } catch { return defaultStatusColors; } }
+            localStorage.setItem(STORAGE_STATUS_COLORS, JSON.stringify(defaultStatusColors));
+            return defaultStatusColors;
+        }
+        function loadMeetings() {
+            const data = localStorage.getItem(STORAGE_MEETINGS);
+            if (data) { try { return JSON.parse(data); } catch { return defaultMeetings; } }
+            localStorage.setItem(STORAGE_MEETINGS, JSON.stringify(defaultMeetings));
+            return defaultMeetings;
+        }
+        function loadAssignments() {
+            const data = localStorage.getItem(STORAGE_ASSIGNMENTS);
+            if (data) { try { return JSON.parse(data); } catch { return []; } }
+            return [];
+        }
+        function loadUserName() {
+            return localStorage.getItem(STORAGE_USER_NAME) || 'Пользователь';
+        }
+        function saveDirections(d) { localStorage.setItem(STORAGE_DIRECTIONS, JSON.stringify(d)); }
+        function saveUsers(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
+        function saveStatuses(s) { localStorage.setItem(STORAGE_STATUSES, JSON.stringify(s)); }
+        function saveStatusColors(c) { localStorage.setItem(STORAGE_STATUS_COLORS, JSON.stringify(c)); }
+        function saveMeetings(m) { localStorage.setItem(STORAGE_MEETINGS, JSON.stringify(m)); }
+        function saveAssignments(a) { localStorage.setItem(STORAGE_ASSIGNMENTS, JSON.stringify(a)); }
+        function saveUserName(n) { localStorage.setItem(STORAGE_USER_NAME, n); }
+
+        // Тема
+        function loadTheme() { return localStorage.getItem(STORAGE_THEME) || 'light'; }
+        function saveTheme(t) { localStorage.setItem(STORAGE_THEME, t); }
+        function applyTheme(theme) {
+            if (theme === 'dark') document.body.classList.add('dark');
+            else document.body.classList.remove('dark');
+        }
+
+        let currentTheme = loadTheme();
+        applyTheme(currentTheme);
+
+        let directions = loadDirections();
+        let users = loadUsers();
+        let statuses = loadStatuses();
+        let statusColors = loadStatusColors();
+        let meetings = loadMeetings();
+        let assignments = loadAssignments();
+        let userName = loadUserName();
+
+        // Вспомогательные функции
+        function updateProfileUI() {
+            document.getElementById('userNameDisplay').innerText = userName;
+            document.getElementById('avatar').innerText = userName.charAt(0).toUpperCase();
+        }
+        document.getElementById('editUserName').addEventListener('click', () => {
+            const newName = prompt('Введите ваше имя:', userName);
+            if (newName && newName.trim()) {
+                userName = newName.trim();
+                saveUserName(userName);
+                updateProfileUI();
+            }
+        });
+
+        function generateAssignmentId(directionName) {
+            const dir = directions.find(d => d.name === directionName);
+            if (!dir) return 'UNKNOWN_00000';
+            const nextNum = (dir.lastNumber || 0) + 1;
+            return `${dir.prefix}_${String(nextNum).padStart(5, '0')}`;
+        }
+        function incrementDirectionCounter(directionName) {
+            const dir = directions.find(d => d.name === directionName);
+            if (dir) {
+                dir.lastNumber = (dir.lastNumber || 0) + 1;
+                saveDirections(directions);
+            }
+        }
+        function groupMeetingsByDate() {
+            const groups = {};
+            meetings.forEach(m => { if (!groups[m.date]) groups[m.date] = []; groups[m.date].push(m); });
+            return groups;
+        }
+        function getDirectionStats(directionName) {
+            const dirAssignments = assignments.filter(a => a.direction === directionName);
+            return {
+                выполнено: dirAssignments.filter(a => a.status === 'выполнено').length,
+                'в работе': dirAssignments.filter(a => a.status === 'в работе').length,
+                просрочено: dirAssignments.filter(a => a.status === 'просрочено').length,
+                активно: dirAssignments.filter(a => a.status === 'активно').length,
             };
+        }
+        function exportAssignmentsToCSV(assigns) {
+            if (!assigns || assigns.length === 0) { alert('Нет данных'); return; }
+            const keys = Object.keys(assigns[0]);
+            const header = keys.join(';');
+            const rows = assigns.map(a => keys.map(k => a[k]).join(';')).join('\n');
+            const content = header + '\n' + rows;
+            const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'assignments.csv';
+            link.click();
+        }
 
-            const defaultMeetings = [
-                { id: 'm1', title: 'Еженедельная планерка', description: 'Обсуждение текущих задач', date: new Date().toISOString().split('T')[0], direction: 'Работа' },
-                { id: 'm2', title: 'Защита проекта', description: 'Демо заказчику', date: new Date().toISOString().split('T')[0], direction: 'Учеба' },
-            ];
+        // ========== ДАШБОРД ==========
+        function renderDashboard() {
+            const total = assignments.length;
+            const completed = assignments.filter(a => a.status === 'выполнено').length;
+            const inProgress = assignments.filter(a => a.status === 'в работе').length;
+            const overdue = assignments.filter(a => a.status === 'просрочено').length;
+            const pending = assignments.filter(a => a.status === 'активно').length;
 
-            function loadDirections() {
-                const data = localStorage.getItem(STORAGE_DIRECTIONS);
-                if (data) {
-                    try {
-                        const parsed = JSON.parse(data);
-                        if (Array.isArray(parsed) && parsed.length && typeof parsed[0] === 'string') {
-                            const newDirs = parsed.map((name, i) => ({
-                                name, prefix: name.slice(0,4).toUpperCase() + i, lastNumber: 0
-                            }));
-                            localStorage.setItem(STORAGE_DIRECTIONS, JSON.stringify(newDirs));
-                            return newDirs;
-                        }
-                        return parsed;
-                    } catch { return defaultDirections; }
-                }
-                localStorage.setItem(STORAGE_DIRECTIONS, JSON.stringify(defaultDirections));
-                return defaultDirections;
-            }
-
-            function loadUsers() {
-                const data = localStorage.getItem(STORAGE_USERS);
-                if (data) {
-                    try { return JSON.parse(data); } catch { return defaultUsers; }
-                }
-                localStorage.setItem(STORAGE_USERS, JSON.stringify(defaultUsers));
-                return defaultUsers;
-            }
-
-            function loadStatuses() {
-                const data = localStorage.getItem(STORAGE_STATUSES);
-                if (data) {
-                    try { return JSON.parse(data); } catch { return defaultStatuses; }
-                }
-                localStorage.setItem(STORAGE_STATUSES, JSON.stringify(defaultStatuses));
-                return defaultStatuses;
-            }
-
-            function loadStatusColors() {
-                const data = localStorage.getItem(STORAGE_STATUS_COLORS);
-                if (data) {
-                    try { return JSON.parse(data); } catch { return defaultStatusColors; }
-                }
-                localStorage.setItem(STORAGE_STATUS_COLORS, JSON.stringify(defaultStatusColors));
-                return defaultStatusColors;
-            }
-
-            function loadMeetings() {
-                const data = localStorage.getItem(STORAGE_MEETINGS);
-                if (data) {
-                    try { return JSON.parse(data); } catch { return defaultMeetings; }
-                }
-                localStorage.setItem(STORAGE_MEETINGS, JSON.stringify(defaultMeetings));
-                return defaultMeetings;
-            }
-
-            function loadAssignments() {
-                const data = localStorage.getItem(STORAGE_ASSIGNMENTS);
-                if (data) {
-                    try { return JSON.parse(data); } catch { return []; }
-                }
-                return [];
-            }
-
-            function loadUserName() {
-                return localStorage.getItem(STORAGE_USER_NAME) || 'Пользователь';
-            }
-
-            function saveDirections(d) { localStorage.setItem(STORAGE_DIRECTIONS, JSON.stringify(d)); }
-            function saveUsers(u) { localStorage.setItem(STORAGE_USERS, JSON.stringify(u)); }
-            function saveStatuses(s) { localStorage.setItem(STORAGE_STATUSES, JSON.stringify(s)); }
-            function saveStatusColors(c) { localStorage.setItem(STORAGE_STATUS_COLORS, JSON.stringify(c)); }
-            function saveMeetings(m) { localStorage.setItem(STORAGE_MEETINGS, JSON.stringify(m)); }
-            function saveAssignments(a) { localStorage.setItem(STORAGE_ASSIGNMENTS, JSON.stringify(a)); }
-            function saveUserName(n) { localStorage.setItem(STORAGE_USER_NAME, n); }
-
-            function loadTheme() { return localStorage.getItem(STORAGE_THEME) || 'light'; }
-            function saveTheme(t) { localStorage.setItem(STORAGE_THEME, t); }
-            function applyTheme(theme) {
-                if (theme === 'dark') document.body.classList.add('dark');
-                else document.body.classList.remove('dark');
-            }
-
-            let currentTheme = loadTheme();
-            applyTheme(currentTheme);
-
-            let directions = loadDirections();
-            let users = loadUsers();
-            let statuses = loadStatuses();
-            let statusColors = loadStatusColors();
-            let meetings = loadMeetings();
-            let assignments = loadAssignments();
-            let userName = loadUserName();
-
-            function updateProfileUI() {
-                document.getElementById('userNameDisplay').innerText = userName;
-                const avatar = document.getElementById('avatar');
-                avatar.innerText = userName.charAt(0).toUpperCase();
-            }
-
-            document.getElementById('editUserName').addEventListener('click', () => {
-                const newName = prompt('Введите ваше имя:', userName);
-                if (newName && newName.trim()) {
-                    userName = newName.trim();
-                    saveUserName(userName);
-                    updateProfileUI();
-                }
+            let dirStats = '';
+            directions.forEach(dir => {
+                const st = getDirectionStats(dir.name);
+                dirStats += `
+                    <div class="direction-card" style="cursor:default;">
+                        <div class="direction-name">${dir.name}</div>
+                        <div class="stats">
+                            <span class="stat-badge" style="background-color: ${statusColors['выполнено'] || '#10b981'};">✓ ${st.выполнено}</span>
+                            <span class="stat-badge" style="background-color: ${statusColors['в работе'] || '#3b82f6'};">🔄 ${st['в работе']}</span>
+                            <span class="stat-badge" style="background-color: ${statusColors['просрочено'] || '#ef4444'};">⚠ ${st.просрочено}</span>
+                            <span class="stat-badge" style="background-color: ${statusColors['активно'] || '#f59e0b'};">⏳ ${st.активно}</span>
+                        </div>
+                    </div>
+                `;
             });
 
-            function generateAssignmentId(directionName) {
-                const dir = directions.find(d => d.name === directionName);
-                if (!dir) return 'UNKNOWN_00000';
-                const nextNum = (dir.lastNumber || 0) + 1;
-                return `${dir.prefix}_${String(nextNum).padStart(5, '0')}`;
-            }
-
-            function incrementDirectionCounter(directionName) {
-                const dir = directions.find(d => d.name === directionName);
-                if (dir) {
-                    dir.lastNumber = (dir.lastNumber || 0) + 1;
-                    saveDirections(directions);
-                }
-            }
-
-            function groupMeetingsByDate() {
-                const groups = {};
-                meetings.forEach(m => {
-                    if (!groups[m.date]) groups[m.date] = [];
-                    groups[m.date].push(m);
-                });
-                return groups;
-            }
-
-            function getDirectionStats(directionName) {
-                const dirAssignments = assignments.filter(a => a.direction === directionName);
-                const stats = {};
-                statuses.forEach(s => stats[s] = 0);
-                dirAssignments.forEach(a => stats[a.status] = (stats[a.status] || 0) + 1);
-                return stats;
-            }
-
-            // ========== ДАШБОРД ==========
-            function renderDashboardTab() {
-                // Общая статистика
-                const totalAssignments = assignments.length;
-                const totalMeetings = meetings.length;
-                const completed = assignments.filter(a => a.status === 'выполнено').length;
-
-                // Статистика по направлениям
-                const dirStats = directions.map(d => {
-                    const stats = getDirectionStats(d.name);
-                    return { name: d.name, ...stats };
-                });
-
-                // Статистика по ответственным
-                const respStats = {};
-                assignments.forEach(a => {
-                    if (!respStats[a.responsible]) respStats[a.responsible] = {};
-                    respStats[a.responsible][a.status] = (respStats[a.responsible][a.status] || 0) + 1;
-                });
-
-                let html = `
-                    <div class="card">
-                        <h2><i class="fas fa-chart-pie"></i> Дашборд</h2>
-                        <div class="dashboard-grid">
-                            <div class="dashboard-card">
-                                <h3>Общая статистика</h3>
-                                <div class="stat-row"><span>Всего поручений:</span> <strong>${totalAssignments}</strong></div>
-                                <div class="stat-row"><span>Всего встреч:</span> <strong>${totalMeetings}</strong></div>
-                                <div class="stat-row"><span>Выполнено:</span> <strong>${completed}</strong></div>
-                            </div>
-                            <div class="dashboard-card">
-                                <h3>По направлениям</h3>
-                                ${dirStats.map(d => `
-                                    <div style="margin-bottom:0.8rem;">
-                                        <strong>${d.name}</strong>
-                                        ${Object.entries(d).filter(([k]) => k !== 'name').map(([status, count]) => `
-                                            <div class="stat-row">
-                                                <span><span class="color-dot" style="background:${statusColors[status] || '#ccc'};"></span>${status}:</span>
-                                                <span>${count}</span>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <div class="dashboard-card">
-                                <h3>По ответственным</h3>
-                                ${Object.entries(respStats).map(([name, stats]) => `
-                                    <div style="margin-bottom:0.8rem;">
-                                        <strong>${name}</strong>
-                                        ${Object.entries(stats).map(([status, count]) => `
-                                            <div class="stat-row">
-                                                <span><span class="color-dot" style="background:${statusColors[status] || '#ccc'};"></span>${status}:</span>
-                                                <span>${count}</span>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                `).join('')}
-                            </div>
+            const respStats = {};
+            assignments.forEach(a => {
+                if (!respStats[a.responsible]) respStats[a.responsible] = { выполнено:0, 'в работе':0, просрочено:0, активно:0 };
+                respStats[a.responsible][a.status]++;
+            });
+            let respHtml = '';
+            for (const [person, st] of Object.entries(respStats)) {
+                respHtml += `
+                    <div class="direction-card" style="cursor:default;">
+                        <div class="direction-name">${person}</div>
+                        <div class="stats">
+                            <span class="stat-badge" style="background-color: ${statusColors['выполнено'] || '#10b981'};">✓ ${st.выполнено}</span>
+                            <span class="stat-badge" style="background-color: ${statusColors['в работе'] || '#3b82f6'};">🔄 ${st['в работе']}</span>
+                            <span class="stat-badge" style="background-color: ${statusColors['просрочено'] || '#ef4444'};">⚠ ${st.просрочено}</span>
+                            <span class="stat-badge" style="background-color: ${statusColors['активно'] || '#f59e0b'};">⏳ ${st.активно}</span>
                         </div>
                     </div>
                 `;
-                document.getElementById('content').innerHTML = html;
             }
 
-            // ========== КАЛЕНДАРЬ ==========
-            function renderCalendarTab() {
-                const now = new Date();
-                let currentMonth = now.getMonth();
-                let currentYear = now.getFullYear();
+            const html = `
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Дашборд</h2>
+                    <div class="stats" style="margin-bottom:2rem;">
+                        <div class="stat-badge" style="background-color:var(--primary);">Всего: ${total}</div>
+                        <div class="stat-badge" style="background-color:${statusColors['выполнено'] || '#10b981'};">Выполнено: ${completed}</div>
+                        <div class="stat-badge" style="background-color:${statusColors['в работе'] || '#3b82f6'};">В работе: ${inProgress}</div>
+                        <div class="stat-badge" style="background-color:${statusColors['просрочено'] || '#ef4444'};">Просрочено: ${overdue}</div>
+                        <div class="stat-badge" style="background-color:${statusColors['активно'] || '#f59e0b'};">Ожидает: ${pending}</div>
+                    </div>
+                    <h3>По направлениям</h3>
+                    <div class="directions-grid">${dirStats}</div>
+                    <h3>По ответственным</h3>
+                    <div class="directions-grid">${respHtml || '<p class="text-small">Нет поручений</p>'}</div>
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
 
-                function buildCalendar(month, year) {
-                    const firstDay = new Date(year, month, 1);
-                    const lastDay = new Date(year, month + 1, 0);
-                    const daysInMonth = lastDay.getDate();
-                    const startWeekday = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-
-                    const days = [];
-                    for (let i = 0; i < startWeekday; i++) days.push(null);
-
-                    for (let d = 1; d <= daysInMonth; d++) {
-                        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                        const dayMeetings = meetings.filter(m => m.date === dateStr);
-                        const isPast = new Date(dateStr) < new Date(new Date().toDateString());
-                        days.push({ date: dateStr, meetings: dayMeetings, past: isPast });
-                    }
-                    return days;
+        // ========== КАЛЕНДАРЬ ==========
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        function renderCalendar() {
+            function buildCalendar(month, year) {
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month+1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startWeekday = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+                const days = [];
+                for (let i=0; i<startWeekday; i++) days.push(null);
+                for (let d=1; d<=daysInMonth; d++) {
+                    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    const dayMeetings = meetings.filter(m => m.date === dateStr);
+                    const isPast = new Date(dateStr) < new Date(new Date().toDateString());
+                    days.push({ date: dateStr, meetings: dayMeetings, past: isPast });
                 }
-
-                function renderMonth() {
-                    const days = buildCalendar(currentMonth, currentYear);
-                    const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-                    const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-
-                    let html = `
-                        <div class="card">
-                            <div class="calendar-header">
-                                <h2><i class="fas fa-calendar-alt"></i> Календарь</h2>
-                                <div class="month-nav">
-                                    <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
-                                    <span style="font-size:1.5rem; font-weight:600;">${monthNames[currentMonth]} ${currentYear}</span>
-                                    <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
-                                </div>
+                return days;
+            }
+            function render() {
+                const days = buildCalendar(currentMonth, currentYear);
+                const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+                const weekdays = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+                let html = `
+                    <div class="card">
+                        <div class="calendar-header">
+                            <h2><i class="fas fa-calendar-alt"></i> Календарь</h2>
+                            <div class="month-nav">
+                                <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                                <span style="font-size:1.5rem;font-weight:600;">${monthNames[currentMonth]} ${currentYear}</span>
+                                <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
                             </div>
-                            <div class="calendar-grid">
-                                ${weekdays.map(d => `<div style="font-weight:600; text-align:center;">${d}</div>`).join('')}
-                                ${days.map(day => {
-                                    if (!day) return '<div class="calendar-day" style="background:transparent; border:none;"></div>';
-                                    const meetingElements = day.meetings.map(m => {
-                                        const assignCount = assignments.filter(a => a.meetingId === m.id).length;
-                                        const countClass = assignCount === 0 ? 'count-zero' : 'count-nonzero';
-                                        return `<div class="day-meeting" onclick="window.openMeetingAssignments('${m.id}')">
-                                            ${m.title} <span class="meeting-count ${countClass}">${assignCount}</span>
-                                        </div>`;
-                                    }).join('');
-                                    return `<div class="calendar-day ${day.past ? 'past' : ''}">
-                                        <div class="day-number">${day.date.split('-')[2]}</div>
-                                        ${meetingElements}
+                        </div>
+                        <div class="calendar-grid">
+                            ${weekdays.map(d => `<div style="font-weight:600;text-align:center;">${d}</div>`).join('')}
+                            ${days.map(day => {
+                                if (!day) return '<div class="calendar-day" style="background:transparent;border:none;"></div>';
+                                const meetingElements = day.meetings.map(m => {
+                                    const count = assignments.filter(a => a.meetingId === m.id).length;
+                                    const countClass = count===0 ? 'count-zero' : 'count-nonzero';
+                                    return `<div class="day-meeting" onclick="window.openMeetingAssignments('${m.id}')">
+                                        ${m.title} <span class="meeting-count ${countClass}">${count}</span>
                                     </div>`;
-                                }).join('')}
-                            </div>
+                                }).join('');
+                                return `<div class="calendar-day ${day.past ? 'past' : ''}">
+                                    <div class="day-number">${day.date.split('-')[2]}</div>
+                                    ${meetingElements}
+                                </div>`;
+                            }).join('')}
                         </div>
-                    `;
-                    document.getElementById('content').innerHTML = html;
-
-                    document.getElementById('prevMonth').addEventListener('click', () => {
-                        if (currentMonth === 0) { currentMonth = 11; currentYear--; }
-                        else currentMonth--;
-                        renderMonth();
-                    });
-                    document.getElementById('nextMonth').addEventListener('click', () => {
-                        if (currentMonth === 11) { currentMonth = 0; currentYear++; }
-                        else currentMonth++;
-                        renderMonth();
-                    });
-                }
-                renderMonth();
-            }
-
-            // ========== СВОД ПОРУЧЕНИЙ ==========
-            let summaryMode = 'meetings';
-
-            function renderSummaryTab() {
-                const html = `
-                    <div class="card">
-                        <h2><i class="fas fa-list"></i> Свод поручений</h2>
-                        <div class="sub-tabs">
-                            <div class="sub-tab ${summaryMode === 'meetings' ? 'active' : ''}" data-mode="meetings">По встречам</div>
-                            <div class="sub-tab ${summaryMode === 'directions' ? 'active' : ''}" data-mode="directions">По направлениям</div>
-                        </div>
-                        <div id="summaryContent"></div>
                     </div>
                 `;
                 document.getElementById('content').innerHTML = html;
-
-                document.querySelectorAll('.sub-tab').forEach(tab => {
-                    tab.addEventListener('click', (e) => {
-                        summaryMode = e.target.dataset.mode;
-                        renderSummaryContent();
-                        document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-                        e.target.classList.add('active');
-                    });
+                document.getElementById('prevMonth')?.addEventListener('click', () => {
+                    if (currentMonth===0) { currentMonth=11; currentYear--; } else currentMonth--;
+                    render();
                 });
-
-                renderSummaryContent();
+                document.getElementById('nextMonth')?.addEventListener('click', () => {
+                    if (currentMonth===11) { currentMonth=0; currentYear++; } else currentMonth++;
+                    render();
+                });
             }
+            render();
+        }
 
-            function renderSummaryContent() {
-                const container = document.getElementById('summaryContent');
-                if (summaryMode === 'meetings') {
-                    const groups = groupMeetingsByDate();
-                    const sortedDates = Object.keys(groups).sort().reverse();
-                    let html = '';
-                    if (sortedDates.length === 0) html = '<p class="text-small">Нет встреч.</p>';
-                    else {
-                        sortedDates.forEach(date => {
-                            html += `<div class="date-group"><div class="date-header">${date}</div><div class="meeting-grid">`;
-                            groups[date].forEach(meeting => {
-                                html += `
-                                    <div class="meeting-card" onclick="window.openMeetingAssignments('${meeting.id}')">
-                                        <div class="meeting-title">${meeting.title}</div>
-                                        <div class="meeting-meta">
-                                            <span>${meeting.date}</span>
-                                            <span class="meeting-direction">${meeting.direction}</span>
-                                        </div>
-                                        ${meeting.description ? `<div class="text-small">${meeting.description}</div>` : ''}
-                                    </div>
-                                `;
-                            });
-                            html += '</div></div>';
-                        });
-                    }
-                    container.innerHTML = html;
-                } else {
-                    let html = '<div class="directions-grid">';
-                    directions.forEach(dir => {
-                        const stats = getDirectionStats(dir.name);
-                        html += `
-                            <div class="direction-card" onclick="window.openDirectionAssignments('${dir.name}')">
-                                <div class="direction-name">${dir.name}</div>
-                                <div class="stats">
-                                    ${Object.entries(stats).map(([status, count]) => `
-                                        <span class="stat-badge" style="background:${statusColors[status] || '#ccc'};">${status}: ${count}</span>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `;
+        // ========== СВОД ПОРУЧЕНИЙ ==========
+        let summaryMode = 'meetings';
+        function renderSummaryTab() {
+            const html = `
+                <div class="card">
+                    <h2><i class="fas fa-list"></i> Свод поручений</h2>
+                    <div class="sub-tabs">
+                        <div class="sub-tab ${summaryMode==='meetings'?'active':''}" data-mode="meetings">По встречам</div>
+                        <div class="sub-tab ${summaryMode==='directions'?'active':''}" data-mode="directions">По направлениям</div>
+                    </div>
+                    <div id="summaryContent"></div>
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+            document.querySelectorAll('.sub-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    summaryMode = e.target.dataset.mode;
+                    renderSummaryContent();
+                    document.querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+            renderSummaryContent();
+        }
+        function renderSummaryContent() {
+            const container = document.getElementById('summaryContent');
+            if (summaryMode === 'meetings') {
+                const groups = groupMeetingsByDate();
+                const sorted = Object.keys(groups).sort().reverse();
+                let html = '';
+                sorted.forEach(date => {
+                    html += `<div><div class="date-header">${date}</div><div class="meeting-grid">`;
+                    groups[date].forEach(m => {
+                        html += `<div class="meeting-card" onclick="window.openMeetingAssignments('${m.id}')">
+                            <div class="meeting-title">${m.title}</div>
+                            <div class="meeting-meta"><span>${m.date}</span><span class="meeting-direction">${m.direction}</span></div>
+                        </div>`;
                     });
-                    html += '</div>';
-                    container.innerHTML = html;
-                }
+                    html += '</div></div>';
+                });
+                container.innerHTML = html || '<p class="text-small">Нет встреч</p>';
+            } else {
+                let html = '<div class="directions-grid">';
+                directions.forEach(dir => {
+                    const st = getDirectionStats(dir.name);
+                    html += `<div class="direction-card" onclick="window.openDirectionAssignments('${dir.name}')">
+                        <div class="direction-name">${dir.name}</div>
+                        <div class="stats">
+                            <span class="stat-badge" style="background-color:${statusColors['выполнено']||'#10b981'};">✓ ${st.выполнено}</span>
+                            <span class="stat-badge" style="background-color:${statusColors['в работе']||'#3b82f6'};">🔄 ${st['в работе']}</span>
+                            <span class="stat-badge" style="background-color:${statusColors['просрочено']||'#ef4444'};">⚠ ${st.просрочено}</span>
+                            <span class="stat-badge" style="background-color:${statusColors['активно']||'#f59e0b'};">⏳ ${st.активно}</span>
+                        </div>
+                    </div>`;
+                });
+                html += '</div>';
+                container.innerHTML = html;
             }
-
-            window.openMeetingAssignments = function(meetingId) {
-                const meeting = meetings.find(m => m.id === meetingId);
-                if (!meeting) return;
+        }
+        window.openMeetingAssignments = function(meetingId) {
+            const meeting = meetings.find(m => m.id === meetingId);
+            if (!meeting) return;
+            renderMeetingAssignments(meeting);
+        };
+        window.openDirectionAssignments = function(directionName) {
+            renderDirectionAssignments(directionName);
+        };
+        function renderMeetingAssignments(meeting) {
+            const meetingAssignments = assignments.filter(a => a.meetingId === meeting.id);
+            let html = `
+                <div class="card">
+                    <h2>${meeting.title}</h2>
+                    <div class="breadcrumbs"><span class="breadcrumb-item" onclick="window.goBackToSummary()">← Все встречи</span></div>
+                    <div class="button-group"><button class="success" onclick="exportAssignmentsToCSV(${JSON.stringify(meetingAssignments).replace(/"/g, '&quot;')})"><i class="fas fa-file-excel"></i> Выгрузить</button></div>
+                    <h3>Добавить поручение</h3>
+                    <form id="addAssignmentForm">
+                        <div class="form-group"><label>Ответственный</label><select id="assignResponsible" required>${users.map(u=>`<option>${u}</option>`).join('')}</select></div>
+                        <div class="form-group"><label>Текст</label><textarea id="assignText" required></textarea></div>
+                        <div class="form-group"><label>Срок исполнения</label><input type="date" id="assignDeadline"></div>
+                        <div class="form-group"><label>Результат</label><textarea id="assignResult" placeholder="Результат выполнения"></textarea></div>
+                        <button type="submit"><i class="fas fa-plus"></i> Добавить</button>
+                    </form>
+                    <h3>Список поручений</h3>
+                    <div class="table-wrapper"> <table> <thead> <tr><th>ID</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th></tr> </thead> <tbody id="assignBody">
+                        ${meetingAssignments.map(a => `
+                             <tr>
+                                <td>${a.id}</td>
+                                <td>${a.responsible}</td>
+                                <td>${a.text}</td>
+                                <td>${a.deadline||''}</td>
+                                <td>${a.result||''}</td>
+                                <td><select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">${statuses.map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+                             </tr>
+                        `).join('')}
+                    </tbody> </table> </div>
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+            document.getElementById('addAssignmentForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const responsible = document.getElementById('assignResponsible').value;
+                const text = document.getElementById('assignText').value;
+                const deadline = document.getElementById('assignDeadline').value;
+                const result = document.getElementById('assignResult').value;
+                const id = generateAssignmentId(meeting.direction);
+                const newAssign = { id, date: meeting.date, direction: meeting.direction, responsible, meetingId: meeting.id, text, status: 'активно', deadline, result };
+                assignments.push(newAssign);
+                saveAssignments(assignments);
+                incrementDirectionCounter(meeting.direction);
                 renderMeetingAssignments(meeting);
-            };
+            });
+        }
+        function renderDirectionAssignments(directionName) {
+            const dirAssignments = assignments.filter(a => a.direction === directionName);
+            let html = `
+                <div class="card">
+                    <h2>Направление: ${directionName}</h2>
+                    <div class="breadcrumbs"><span class="breadcrumb-item" onclick="window.goBackToSummary()">← Назад к направлениям</span></div>
+                    <div class="button-group"><button class="success" onclick="exportAssignmentsToCSV(${JSON.stringify(dirAssignments).replace(/"/g, '&quot;')})"><i class="fas fa-file-excel"></i> Выгрузить</button></div>
+                    <div class="table-wrapper"> <table> <thead> <tr><th>ID</th><th>Дата</th><th>Встреча</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th></tr> </thead> <tbody>
+                        ${dirAssignments.map(a => {
+                            const m = meetings.find(m=>m.id===a.meetingId);
+                            return `<tr>
+                                <td>${a.id}</td>
+                                <td>${a.date}</td>
+                                <td>${m?m.title:''}</td>
+                                <td>${a.responsible}</td>
+                                <td>${a.text}</td>
+                                <td>${a.deadline||''}</td>
+                                <td>${a.result||''}</td>
+                                <td><select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">${statuses.map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+                            </tr>`;
+                        }).join('')}
+                    </tbody> </table> </div>
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+        }
+        window.updateAssignmentStatus = function(id, newStatus) {
+            const a = assignments.find(x=>x.id===id);
+            if (a) { a.status = newStatus; saveAssignments(assignments); }
+        };
+        window.goBackToSummary = function() { renderSummaryTab(); };
 
-            function renderMeetingAssignments(meeting) {
-                const meetingAssignments = assignments.filter(a => a.meetingId === meeting.id);
-                let html = `
-                    <div class="card">
-                        <h2>${meeting.title}</h2>
-                        ${meeting.description ? `<p class="text-small" style="margin-bottom:1rem;">${meeting.description}</p>` : ''}
-                        <div class="breadcrumbs">
-                            <span class="breadcrumb-item" onclick="window.goBackToSummary()">← Все встречи</span>
-                        </div>
-                        <div class="button-group" style="margin-bottom:1rem;">
-                            <button class="success" onclick="exportAssignmentsToCSV(${JSON.stringify(meetingAssignments).replace(/"/g, '&quot;')})">
-                                <i class="fas fa-file-excel"></i> Выгрузить поручения
-                            </button>
-                        </div>
-                        <h3>Добавить поручение</h3>
-                        <form id="addAssignmentForm">
-                            <div class="form-group">
-                                <label>Ответственный</label>
-                                <select id="assignResponsible" required>
-                                    ${users.map(u => `<option value="${u}">${u}</option>`).join('')}
-                                </select>
+        // ========== ЗАВЕДЕНИЕ ВСТРЕЧ ==========
+        function renderCreateMeetingTab() {
+            const html = `
+                <div class="card">
+                    <h2><i class="fas fa-calendar-plus"></i> Заведение встреч</h2>
+                    <form id="createMeetingForm">
+                        <div class="form-group"><label>Название</label><input id="meetingTitle" required></div>
+                        <div class="form-group"><label>Дата</label><input type="date" id="meetingDate" required value="${new Date().toISOString().split('T')[0]}"></div>
+                        <div class="form-group"><label>Направление</label><select id="meetingDirection">${directions.map(d=>`<option>${d.name}</option>`).join('')}</select></div>
+                        <div class="form-group"><label>Описание</label><textarea id="meetingDesc" rows="3"></textarea></div>
+                        <button type="submit"><i class="fas fa-save"></i> Создать</button>
+                    </form>
+                    <h3>Существующие встречи</h3>
+                    <div class="meeting-grid" id="meetingList">
+                        ${meetings.map(m => `
+                            <div class="meeting-card" style="cursor:default;">
+                                <div class="meeting-title">${m.title}</div>
+                                <div class="meeting-meta"><span>${m.date}</span><span class="meeting-direction">${m.direction}</span></div>
+                                <div class="text-small">${m.description||''}</div>
+                                <div style="display:flex;justify-content:flex-end;"><i class="fas fa-trash delete-meeting-btn" onclick="window.deleteMeeting('${m.id}')"></i></div>
                             </div>
-                            <div class="form-group">
-                                <label>Текст поручения</label>
-                                <textarea id="assignText" required></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Срок исполнения</label>
-                                <input type="date" id="assignDueDate">
-                            </div>
-                            <div class="form-group">
-                                <label>Результат</label>
-                                <textarea id="assignResult"></textarea>
-                            </div>
-                            <button type="submit"><i class="fas fa-plus"></i> Добавить</button>
-                        </form>
-
-                        <h3 style="margin-top:2rem;">Список поручений</h3>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>ID</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th></tr></thead>
-                                <tbody id="assignmentsBody">
-                                    ${meetingAssignments.map(a => `
-                                        <tr>
-                                            <td>${a.id}</td>
-                                            <td>${a.responsible}</td>
-                                            <td>${a.text}</td>
-                                            <td>${a.dueDate || ''}</td>
-                                            <td>${a.result || ''}</td>
-                                            <td>
-                                                <select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">
-                                                    ${statuses.map(s => `<option value="${s}" ${a.status === s ? 'selected' : ''}>${s}</option>`).join('')}
-                                                </select>
-                                            </td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>
-                        </div>
+                        `).join('')}
                     </div>
-                `;
-                document.getElementById('content').innerHTML = html;
-
-                document.getElementById('addAssignmentForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const responsible = document.getElementById('assignResponsible').value;
-                    const text = document.getElementById('assignText').value;
-                    const dueDate = document.getElementById('assignDueDate').value;
-                    const result = document.getElementById('assignResult').value;
-                    const id = generateAssignmentId(meeting.direction);
-                    const newAssignment = {
-                        id, date: meeting.date, direction: meeting.direction,
-                        responsible, meetingId: meeting.id, text, status: 'активно',
-                        dueDate, result
-                    };
-                    assignments.push(newAssignment);
-                    saveAssignments(assignments);
-                    incrementDirectionCounter(meeting.direction);
-                    renderMeetingAssignments(meeting);
-                });
-            }
-
-            window.updateAssignmentStatus = function(id, newStatus) {
-                const assignment = assignments.find(a => a.id === id);
-                if (assignment) {
-                    assignment.status = newStatus;
-                    saveAssignments(assignments);
-                }
-            };
-
-            window.goBackToSummary = function() {
-                renderSummaryTab();
-            };
-
-            window.openDirectionAssignments = function(directionName) {
-                renderDirectionAssignments(directionName);
-            };
-
-            function renderDirectionAssignments(directionName) {
-                const dirAssignments = assignments.filter(a => a.direction === directionName);
-                let html = `
-                    <div class="card">
-                        <h2>Направление: ${directionName}</h2>
-                        <div class="breadcrumbs">
-                            <span class="breadcrumb-item" onclick="window.goBackToSummary()">← Назад к направлениям</span>
-                        </div>
-                        <div class="button-group" style="margin-bottom:1rem;">
-                            <button class="success" onclick="exportAssignmentsToCSV(${JSON.stringify(dirAssignments).replace(/"/g, '&quot;')})">
-                                <i class="fas fa-file-excel"></i> Выгрузить поручения
-                            </button>
-                        </div>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead><tr><th>ID</th><th>Дата</th><th>Встреча</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th></tr></thead>
-                                <tbody>
-                                    ${dirAssignments.map(a => {
-                                        const meeting = meetings.find(m => m.id === a.meetingId);
-                                        return `<tr>
-                                            <td>${a.id}</td>
-                                            <td>${a.date}</td>
-                                            <td>${meeting ? meeting.title : ''}</td>
-                                            <td>${a.responsible}</td>
-                                            <td>${a.text}</td>
-                                            <td>${a.dueDate || ''}</td>
-                                            <td>${a.result || ''}</td>
-                                            <td>
-                                                <select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">
-                                                    ${statuses.map(s => `<option value="${s}" ${a.status === s ? 'selected' : ''}>${s}</option>`).join('')}
-                                                </select>
-                                            </td>
-                                        </tr>`;
-                                    }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('content').innerHTML = html;
-            }
-
-            window.exportAssignmentsToCSV = function(assigns) {
-                if (!assigns || assigns.length === 0) { alert('Нет данных для выгрузки'); return; }
-                const keys = Object.keys(assigns[0]);
-                const header = keys.join(';');
-                const rows = assigns.map(a => keys.map(k => a[k]).join(';')).join('\n');
-                const content = header + '\n' + rows;
-                const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'assignments.csv';
-                link.click();
-            };
-
-            // ========== ЗАВЕДЕНИЕ ВСТРЕЧ ==========
-            function renderCreateMeetingTab() {
-                const html = `
-                    <div class="card">
-                        <h2><i class="fas fa-calendar-plus"></i> Заведение встреч</h2>
-                        <form id="createMeetingForm">
-                            <div class="form-group"><label>Название</label><input type="text" id="meetingTitle" required></div>
-                            <div class="form-group"><label>Описание</label><textarea id="meetingDescription"></textarea></div>
-                            <div class="form-group"><label>Дата</label><input type="date" id="meetingDate" required value="${new Date().toISOString().split('T')[0]}"></div>
-                            <div class="form-group"><label>Направление</label><select id="meetingDirection" required>${directions.map(d => `<option value="${d.name}">${d.name}</option>`).join('')}</select></div>
-                            <button type="submit"><i class="fas fa-save"></i> Создать</button>
-                        </form>
-                        <h3 style="margin-top:2rem;">Существующие встречи</h3>
-                        <div class="meeting-grid" id="meetingList">
-                            ${meetings.map(m => `
-                                <div class="meeting-card" style="cursor:default;">
-                                    <div class="meeting-title">${m.title}</div>
-                                    <div class="meeting-meta"><span>${m.date}</span><span class="meeting-direction">${m.direction}</span></div>
-                                    ${m.description ? `<div class="text-small">${m.description}</div>` : ''}
-                                    <div style="display:flex; justify-content:flex-end; margin-top:0.5rem;">
-                                        <i class="fas fa-trash delete-meeting-btn" onclick="window.deleteMeeting('${m.id}')"></i>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-                document.getElementById('content').innerHTML = html;
-
-                document.getElementById('createMeetingForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const title = document.getElementById('meetingTitle').value;
-                    const description = document.getElementById('meetingDescription').value;
-                    const date = document.getElementById('meetingDate').value;
-                    const direction = document.getElementById('meetingDirection').value;
-                    const newId = 'm' + Date.now() + Math.random().toString(36).substr(2,4);
-                    meetings.push({ id: newId, title, description, date, direction });
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+            document.getElementById('createMeetingForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = document.getElementById('meetingTitle').value;
+                const date = document.getElementById('meetingDate').value;
+                const direction = document.getElementById('meetingDirection').value;
+                const description = document.getElementById('meetingDesc').value;
+                const id = 'm'+Date.now()+Math.random().toString(36).substr(2,4);
+                meetings.push({ id, title, date, direction, description });
+                saveMeetings(meetings);
+                renderCreateMeetingTab();
+            });
+            window.deleteMeeting = (id) => {
+                if (confirm('Удалить встречу?')) {
+                    meetings = meetings.filter(m=>m.id!==id);
                     saveMeetings(meetings);
                     renderCreateMeetingTab();
-                });
+                }
+            };
+        }
 
-                window.deleteMeeting = (id) => {
-                    if (confirm('Удалить встречу? Все связанные поручения останутся (без встречи).')) {
-                        meetings = meetings.filter(m => m.id !== id);
-                        saveMeetings(meetings);
-                        renderCreateMeetingTab();
-                    }
+        // ========== БЭКАП ==========
+        function renderBackupTab() {
+            const html = `
+                <div class="card">
+                    <h2><i class="fas fa-database"></i> Бэкап</h2>
+                    <div class="button-group">
+                        <button class="success" id="exportAll"><i class="fas fa-download"></i> Выгрузить все данные</button>
+                        <button class="secondary" id="importAllBtn"><i class="fas fa-upload"></i> Загрузить данные</button>
+                        <input type="file" id="importAllFile" class="file-input" accept=".json">
+                    </div>
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+            document.getElementById('exportAll').addEventListener('click', () => {
+                const data = { meetings, assignments, directions, users, statuses, statusColors, userName };
+                const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'profex_backup.json';
+                a.click();
+            });
+            document.getElementById('importAllBtn').addEventListener('click', () => {
+                document.getElementById('importAllFile').click();
+            });
+            document.getElementById('importAllFile').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const data = JSON.parse(ev.target.result);
+                        if (data.meetings) { meetings = data.meetings; saveMeetings(meetings); }
+                        if (data.assignments) { assignments = data.assignments; saveAssignments(assignments); }
+                        if (data.directions) { directions = data.directions; saveDirections(directions); }
+                        if (data.users) { users = data.users; saveUsers(users); }
+                        if (data.statuses) { statuses = data.statuses; saveStatuses(statuses); }
+                        if (data.statusColors) { statusColors = data.statusColors; saveStatusColors(statusColors); }
+                        if (data.userName) { userName = data.userName; saveUserName(userName); updateProfileUI(); }
+                        alert('Данные загружены');
+                        renderBackupTab();
+                    } catch(e) { alert('Ошибка'); }
+                    e.target.value = '';
                 };
-            }
+                reader.readAsText(file,'UTF-8');
+            });
+        }
 
-            // ========== БЭКАП ==========
-            function renderBackupTab() {
-                const html = `
-                    <div class="card">
-                        <h2><i class="fas fa-database"></i> Бэкап данных</h2>
-                        <p class="text-small">Здесь вы можете выгрузить все данные приложения (встречи, поручения, направления, пользователи, статусы, цвета статусов, имя пользователя) или загрузить их обратно.</p>
-                        <div class="button-group" style="margin-top:2rem;">
-                            <button class="success" id="exportAll"><i class="fas fa-download"></i> Выгрузить все данные</button>
-                            <button class="secondary" id="importAllBtn"><i class="fas fa-upload"></i> Загрузить данные</button>
-                            <input type="file" id="importAllFile" class="file-input" accept=".json">
+        // ========== НАСТРОЙКИ ==========
+        let settingsTab = 'directions';
+        function renderSettingsTab() {
+            const html = `
+                <div class="card">
+                    <h2><i class="fas fa-cog"></i> Настройки</h2>
+                    <div class="sub-tabs">
+                        <div class="sub-tab ${settingsTab==='directions'?'active':''}" data-settings="directions">Направления</div>
+                        <div class="sub-tab ${settingsTab==='users'?'active':''}" data-settings="users">Ответственные</div>
+                        <div class="sub-tab ${settingsTab==='statuses'?'active':''}" data-settings="statuses">Статусы и цвета</div>
+                        <div class="sub-tab ${settingsTab==='site'?'active':''}" data-settings="site">Оформление</div>
+                    </div>
+                    <div id="settingsContent"></div>
+                    <div class="config-block">
+                        <h3>Конфигурация</h3>
+                        <div class="button-group">
+                            <button class="success" id="exportConfig"><i class="fas fa-download"></i> Выгрузить настройки</button>
+                            <button class="secondary" id="importConfigBtn"><i class="fas fa-upload"></i> Загрузить настройки</button>
+                            <input type="file" id="configFileInput" class="file-input" accept=".json">
                         </div>
                     </div>
-                `;
-                document.getElementById('content').innerHTML = html;
-
-                document.getElementById('exportAll').addEventListener('click', () => {
-                    const data = {
-                        meetings,
-                        assignments,
-                        directions,
-                        users,
-                        statuses,
-                        statusColors,
-                        userName
-                    };
-                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'profex_backup.json';
-                    link.click();
+                </div>
+            `;
+            document.getElementById('content').innerHTML = html;
+            document.querySelectorAll('.sub-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    settingsTab = e.target.dataset.settings;
+                    renderSettingsContent();
+                    document.querySelectorAll('.sub-tab').forEach(t=>t.classList.remove('active'));
+                    e.target.classList.add('active');
                 });
-
-                document.getElementById('importAllBtn').addEventListener('click', () => {
-                    document.getElementById('importAllFile').click();
+            });
+            renderSettingsContent();
+            document.getElementById('exportConfig').addEventListener('click', () => {
+                const cfg = { directions, users, statuses, statusColors, userName };
+                const blob = new Blob([JSON.stringify(cfg,null,2)], {type:'application/json'});
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'profex_config.json';
+                a.click();
+            });
+            document.getElementById('importConfigBtn').addEventListener('click', () => {
+                document.getElementById('configFileInput').click();
+            });
+            document.getElementById('configFileInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const cfg = JSON.parse(ev.target.result);
+                        if (cfg.directions) { directions = cfg.directions; saveDirections(directions); }
+                        if (cfg.users) { users = cfg.users; saveUsers(users); }
+                        if (cfg.statuses) { statuses = cfg.statuses; saveStatuses(statuses); }
+                        if (cfg.statusColors) { statusColors = cfg.statusColors; saveStatusColors(statusColors); }
+                        if (cfg.userName) { userName = cfg.userName; saveUserName(userName); updateProfileUI(); }
+                        alert('Настройки загружены');
+                        renderSettingsTab();
+                    } catch(e) { alert('Ошибка'); }
+                    e.target.value = '';
+                };
+                reader.readAsText(file,'UTF-8');
+            });
+        }
+        function renderSettingsContent() {
+            const container = document.getElementById('settingsContent');
+            if (settingsTab === 'directions') {
+                let html = `<h3>Управление направлениями</h3><div class="flex-row" style="margin-bottom:1rem;"><input id="newDirName" placeholder="Название"><input id="newDirPrefix" placeholder="Префикс"><button id="addDirBtn">Добавить</button></div><div class="direction-list">`;
+                directions.forEach((d,i) => {
+                    html += `<div class="direction-item"><span>${d.name} (${d.prefix}) — номер: ${d.lastNumber}</span><div><button class="secondary edit-dir" data-index="${i}"><i class="fas fa-edit"></i></button><button class="danger delete-dir" data-index="${i}"><i class="fas fa-trash"></i></button></div></div>`;
                 });
-
-                document.getElementById('importAllFile').addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        try {
-                            const data = JSON.parse(ev.target.result);
-                            if (data.meetings) { meetings = data.meetings; saveMeetings(meetings); }
-                            if (data.assignments) { assignments = data.assignments; saveAssignments(assignments); }
-                            if (data.directions) { directions = data.directions; saveDirections(directions); }
-                            if (data.users) { users = data.users; saveUsers(users); }
-                            if (data.statuses) { statuses = data.statuses; saveStatuses(statuses); }
-                            if (data.statusColors) { statusColors = data.statusColors; saveStatusColors(statusColors); }
-                            if (data.userName) { userName = data.userName; saveUserName(userName); updateProfileUI(); }
-                            alert('Данные загружены');
-                        } catch { alert('Ошибка загрузки'); }
-                        e.target.value = '';
-                    };
-                    reader.readAsText(file, 'UTF-8');
+                html += `</div>`;
+                container.innerHTML = html;
+                document.getElementById('addDirBtn').addEventListener('click', () => {
+                    const name = document.getElementById('newDirName').value.trim();
+                    let prefix = document.getElementById('newDirPrefix').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+                    if (!name || !prefix) return;
+                    if (directions.some(d=>d.name===name)) { alert('Уже есть'); return; }
+                    if (directions.some(d=>d.prefix===prefix)) { alert('Префикс уже есть'); return; }
+                    directions.push({ name, prefix, lastNumber:0 });
+                    saveDirections(directions);
+                    renderSettingsContent();
                 });
-            }
-
-            // ========== НАСТРОЙКИ ==========
-            let settingsTab = 'directions';
-
-            function renderSettingsTab() {
-                const html = `
-                    <div class="card">
-                        <h2><i class="fas fa-cog"></i> Настройки</h2>
-                        <div class="sub-tabs">
-                            <div class="sub-tab ${settingsTab === 'directions' ? 'active' : ''}" data-settings="directions">Направления</div>
-                            <div class="sub-tab ${settingsTab === 'users' ? 'active' : ''}" data-settings="users">Ответственные</div>
-                            <div class="sub-tab ${settingsTab === 'statuses' ? 'active' : ''}" data-settings="statuses">Статусы и цвета</div>
-                            <div class="sub-tab ${settingsTab === 'site' ? 'active' : ''}" data-settings="site">Оформление</div>
-                        </div>
-                        <div id="settingsContent"></div>
-                        <div class="config-block">
-                            <h3>Конфигурация</h3>
-                            <div class="button-group">
-                                <button class="success" id="exportConfig"><i class="fas fa-download"></i> Выгрузить настройки</button>
-                                <button class="secondary" id="importConfigBtn"><i class="fas fa-upload"></i> Загрузить настройки</button>
-                                <input type="file" id="configFileInput" class="file-input" accept=".json">
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('content').innerHTML = html;
-
-                document.querySelectorAll('.sub-tab').forEach(tab => {
-                    tab.addEventListener('click', (e) => {
-                        settingsTab = e.target.dataset.settings;
-                        renderSettingsContent();
-                        document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-                        e.target.classList.add('active');
-                    });
-                });
-
-                renderSettingsContent();
-
-                document.getElementById('exportConfig').addEventListener('click', () => {
-                    const config = { directions, users, statuses, statusColors, userName };
-                    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'profex_config.json';
-                    link.click();
-                });
-
-                document.getElementById('importConfigBtn').addEventListener('click', () => {
-                    document.getElementById('configFileInput').click();
-                });
-
-                document.getElementById('configFileInput').addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        try {
-                            const cfg = JSON.parse(ev.target.result);
-                            if (cfg.directions) { directions = cfg.directions; saveDirections(directions); }
-                            if (cfg.users) { users = cfg.users; saveUsers(users); }
-                            if (cfg.statuses) { statuses = cfg.statuses; saveStatuses(statuses); }
-                            if (cfg.statusColors) { statusColors = cfg.statusColors; saveStatusColors(statusColors); }
-                            if (cfg.userName) { userName = cfg.userName; saveUserName(userName); updateProfileUI(); }
-                            alert('Конфигурация загружена');
-                            renderSettingsTab();
-                        } catch { alert('Ошибка'); }
-                        e.target.value = '';
-                    };
-                    reader.readAsText(file, 'UTF-8');
-                });
-            }
-
-            function renderSettingsContent() {
-                const container = document.getElementById('settingsContent');
-                if (settingsTab === 'directions') {
-                    let html = `
-                        <h3>Управление направлениями</h3>
-                        <div class="flex-row" style="margin-bottom:1rem;">
-                            <input type="text" id="newDirName" placeholder="Название">
-                            <input type="text" id="newDirPrefix" placeholder="Префикс">
-                            <button id="addDirBtn"><i class="fas fa-plus"></i> Добавить</button>
-                        </div>
-                        <div class="direction-list">
-                            ${directions.map((d, idx) => `
-                                <div class="direction-item" data-index="${idx}">
-                                    <span>${d.name} (${d.prefix}) — номер: ${d.lastNumber}</span>
-                                    <div>
-                                        <button class="secondary edit-dir" data-index="${idx}"><i class="fas fa-edit"></i></button>
-                                        <button class="danger delete-dir" data-index="${idx}"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    container.innerHTML = html;
-                    document.getElementById('addDirBtn')?.addEventListener('click', () => {
-                        const name = document.getElementById('newDirName').value.trim();
-                        let prefix = document.getElementById('newDirPrefix').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-                        if (!name || !prefix) return;
-                        if (directions.some(d => d.name === name)) { alert('Уже есть'); return; }
-                        if (directions.some(d => d.prefix === prefix)) { alert('Префикс уже есть'); return; }
-                        directions.push({ name, prefix, lastNumber: 0 });
+                document.querySelectorAll('.delete-dir').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = btn.dataset.index;
+                        if (directions.length<=1) { alert('Должно быть хотя бы одно'); return; }
+                        directions.splice(idx,1);
                         saveDirections(directions);
                         renderSettingsContent();
                     });
-                    document.querySelectorAll('.delete-dir').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const idx = e.target.closest('button').dataset.index;
-                            if (directions.length <= 1) { alert('Должно быть хотя бы одно'); return; }
-                            directions.splice(idx, 1);
-                            saveDirections(directions);
-                            renderSettingsContent();
-                        });
-                    });
-                    document.querySelectorAll('.edit-dir').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const idx = e.target.closest('button').dataset.index;
-                            const dir = directions[idx];
-                            const newName = prompt('Название:', dir.name);
-                            if (newName && newName !== dir.name) {
-                                if (directions.some(d => d.name === newName)) { alert('Уже есть'); return; }
-                                dir.name = newName;
+                });
+                document.querySelectorAll('.edit-dir').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = btn.dataset.index;
+                        const d = directions[idx];
+                        const newName = prompt('Название:', d.name);
+                        if (newName && newName!==d.name) {
+                            if (directions.some(dd=>dd.name===newName)) { alert('Уже есть'); return; }
+                            d.name = newName;
+                        }
+                        const newPrefix = prompt('Префикс:', d.prefix);
+                        if (newPrefix) {
+                            const clean = newPrefix.toUpperCase().replace(/[^A-Z0-9]/g,'');
+                            if (clean && clean!==d.prefix) {
+                                if (directions.some(dd=>dd.prefix===clean)) { alert('Префикс уже есть'); return; }
+                                d.prefix = clean;
                             }
-                            const newPrefix = prompt('Префикс:', dir.prefix);
-                            if (newPrefix) {
-                                const clean = newPrefix.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                                if (clean && clean !== dir.prefix) {
-                                    if (directions.some(d => d.prefix === clean)) { alert('Префикс уже есть'); return; }
-                                    dir.prefix = clean;
-                                }
-                            }
-                            saveDirections(directions);
-                            renderSettingsContent();
-                        });
+                        }
+                        saveDirections(directions);
+                        renderSettingsContent();
                     });
-                } else if (settingsTab === 'users') {
-                    let html = `
-                        <h3>Ответственные лица</h3>
-                        <div class="flex-row" style="margin-bottom:1rem;">
-                            <input type="text" id="newUserName" placeholder="Новый пользователь">
-                            <button id="addUserBtn"><i class="fas fa-plus"></i> Добавить</button>
-                        </div>
-                        <div class="direction-list">
-                            ${users.map((u, idx) => `
-                                <div class="direction-item">
-                                    <span>${u}</span>
-                                    <button class="danger delete-user" data-index="${idx}"><i class="fas fa-trash"></i></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    container.innerHTML = html;
-                    document.getElementById('addUserBtn').addEventListener('click', () => {
-                        const name = document.getElementById('newUserName').value.trim();
-                        if (!name) return;
-                        if (users.includes(name)) { alert('Уже есть'); return; }
-                        users.push(name);
+                });
+            } else if (settingsTab === 'users') {
+                let html = `<h3>Ответственные</h3><div class="flex-row" style="margin-bottom:1rem;"><input id="newUserName" placeholder="Новый пользователь"><button id="addUserBtn">Добавить</button></div><div class="direction-list">`;
+                users.forEach((u,i) => {
+                    html += `<div class="direction-item"><span>${u}</span><button class="danger delete-user" data-index="${i}"><i class="fas fa-trash"></i></button></div>`;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+                document.getElementById('addUserBtn').addEventListener('click', () => {
+                    const name = document.getElementById('newUserName').value.trim();
+                    if (!name) return;
+                    if (users.includes(name)) { alert('Уже есть'); return; }
+                    users.push(name);
+                    saveUsers(users);
+                    renderSettingsContent();
+                });
+                document.querySelectorAll('.delete-user').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = btn.dataset.index;
+                        if (users.length<=1) { alert('Должен быть хотя бы один'); return; }
+                        users.splice(idx,1);
                         saveUsers(users);
                         renderSettingsContent();
                     });
-                    document.querySelectorAll('.delete-user').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const idx = e.target.closest('button').dataset.index;
-                            if (users.length <= 1) { alert('Должен быть хотя бы один'); return; }
-                            users.splice(idx, 1);
-                            saveUsers(users);
-                            renderSettingsContent();
-                        });
-                    });
-                } else if (settingsTab === 'statuses') {
-                    let html = `
-                        <h3>Статусы поручений</h3>
-                        <div style="margin-bottom:1rem;">
-                            ${statuses.map((s, idx) => `
-                                <div class="flex-row" style="margin-bottom:0.5rem;">
-                                    <input type="text" value="${s}" placeholder="Статус" id="statusName_${idx}" style="flex:1;">
-                                    <input type="color" value="${statusColors[s] || '#cccccc'}" id="statusColor_${idx}">
-                                    <button class="danger delete-status" data-index="${idx}"><i class="fas fa-trash"></i></button>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <div class="flex-row">
-                            <input type="text" id="newStatusName" placeholder="Новый статус">
-                            <input type="color" id="newStatusColor" value="#3b82f6">
-                            <button id="addStatusBtn"><i class="fas fa-plus"></i> Добавить</button>
-                        </div>
-                        <button id="saveStatusColors" class="success" style="margin-top:1rem;">Сохранить изменения</button>
-                    `;
-                    container.innerHTML = html;
-
-                    document.getElementById('saveStatusColors').addEventListener('click', () => {
-                        const newStatuses = [];
-                        const newColors = {};
-                        statuses.forEach((_, idx) => {
-                            const nameInput = document.getElementById(`statusName_${idx}`);
-                            const colorInput = document.getElementById(`statusColor_${idx}`);
-                            if (nameInput && nameInput.value.trim()) {
-                                const name = nameInput.value.trim();
-                                newStatuses.push(name);
-                                newColors[name] = colorInput.value;
-                            }
-                        });
-                        if (newStatuses.length) {
-                            statuses = newStatuses;
-                            statusColors = newColors;
-                            saveStatuses(statuses);
-                            saveStatusColors(statusColors);
-                            alert('Статусы и цвета сохранены');
-                        }
-                    });
-
-                    document.getElementById('addStatusBtn').addEventListener('click', () => {
-                        const name = document.getElementById('newStatusName').value.trim();
-                        const color = document.getElementById('newStatusColor').value;
-                        if (!name) return;
-                        if (statuses.includes(name)) { alert('Такой статус уже есть'); return; }
-                        statuses.push(name);
-                        statusColors[name] = color;
+                });
+            } else if (settingsTab === 'statuses') {
+                let html = `<h3>Статусы и цвета</h3><div class="flex-row" style="margin-bottom:1rem;"><input id="newStatus" placeholder="Новый статус"><input type="color" id="newStatusColor" value="#3b82f6"><button id="addStatusBtn">Добавить</button></div><div class="direction-list">`;
+                for (let [s, color] of Object.entries(statusColors)) {
+                    html += `<div class="direction-item"><span style="display:flex;align-items:center;gap:0.5rem;"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background-color:${color};"></span>${s}</span><div><button class="secondary edit-status" data-status="${s}"><i class="fas fa-edit"></i></button><button class="danger delete-status" data-status="${s}"><i class="fas fa-trash"></i></button></div></div>`;
+                }
+                html += `</div>`;
+                container.innerHTML = html;
+                document.getElementById('addStatusBtn').addEventListener('click', () => {
+                    const st = document.getElementById('newStatus').value.trim();
+                    const col = document.getElementById('newStatusColor').value;
+                    if (!st) return;
+                    if (statusColors[st]) { alert('Статус уже есть'); return; }
+                    statusColors[st] = col;
+                    if (!statuses.includes(st)) statuses.push(st);
+                    saveStatuses(statuses);
+                    saveStatusColors(statusColors);
+                    renderSettingsContent();
+                });
+                document.querySelectorAll('.delete-status').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const st = btn.dataset.status;
+                        if (statuses.length<=1) { alert('Должен быть хотя бы один статус'); return; }
+                        delete statusColors[st];
+                        const idx = statuses.indexOf(st);
+                        if (idx!==-1) statuses.splice(idx,1);
                         saveStatuses(statuses);
                         saveStatusColors(statusColors);
                         renderSettingsContent();
                     });
-
-                    document.querySelectorAll('.delete-status').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            const idx = e.target.closest('button').dataset.index;
-                            const statusToRemove = statuses[idx];
-                            if (statuses.length <= 1) { alert('Должен быть хотя бы один статус'); return; }
-                            statuses.splice(idx, 1);
-                            delete statusColors[statusToRemove];
+                });
+                document.querySelectorAll('.edit-status').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const oldStatus = btn.dataset.status;
+                        const newName = prompt('Новое название статуса:', oldStatus);
+                        if (newName && newName!==oldStatus) {
+                            if (statusColors[newName]) { alert('Уже есть'); return; }
+                            statusColors[newName] = statusColors[oldStatus];
+                            delete statusColors[oldStatus];
+                            const idx = statuses.indexOf(oldStatus);
+                            if (idx!==-1) statuses[idx] = newName;
                             saveStatuses(statuses);
                             saveStatusColors(statusColors);
                             renderSettingsContent();
-                        });
+                        }
+                        const newColor = prompt('Новый цвет (hex):', statusColors[oldStatus]);
+                        if (newColor && /^#[0-9A-F]{6}$/i.test(newColor)) {
+                            statusColors[oldStatus] = newColor;
+                            saveStatusColors(statusColors);
+                            renderSettingsContent();
+                        }
                     });
-                } else if (settingsTab === 'site') {
-                    let html = `
-                        <h3>Оформление</h3>
-                        <div class="form-group">
-                            <label>Тема сайта</label>
-                            <select id="themeSelect">
-                                <option value="light" ${currentTheme==='light'?'selected':''}>Светлая</option>
-                                <option value="dark" ${currentTheme==='dark'?'selected':''}>Тёмная</option>
-                            </select>
-                        </div>
-                        <button id="applyThemeBtn">Применить</button>
-                    `;
-                    container.innerHTML = html;
-                    document.getElementById('applyThemeBtn').addEventListener('click', () => {
-                        const newTheme = document.getElementById('themeSelect').value;
-                        currentTheme = newTheme;
-                        applyTheme(newTheme);
-                        saveTheme(newTheme);
-                    });
-                }
-            }
-
-            // ========== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК МЕНЮ ==========
-            const tabs = {
-                dashboard: renderDashboardTab,
-                calendar: renderCalendarTab,
-                summary: renderSummaryTab,
-                'create-meeting': renderCreateMeetingTab,
-                backup: renderBackupTab,
-                settings: renderSettingsTab
-            };
-
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    const tab = item.dataset.tab;
-                    tabs[tab]();
                 });
-            });
+            } else if (settingsTab === 'site') {
+                container.innerHTML = `
+                    <h3>Оформление</h3>
+                    <div class="form-group"><label>Тема сайта</label><select id="themeSelect"><option value="light" ${currentTheme==='light'?'selected':''}>Светлая</option><option value="dark" ${currentTheme==='dark'?'selected':''}>Тёмная</option></select></div>
+                    <button id="applyThemeBtn">Применить</button>
+                `;
+                document.getElementById('applyThemeBtn').addEventListener('click', () => {
+                    const newTheme = document.getElementById('themeSelect').value;
+                    currentTheme = newTheme;
+                    applyTheme(newTheme);
+                    saveTheme(newTheme);
+                });
+            }
+        }
 
-            renderDashboardTab();
-            updateProfileUI();
-        })();
+        // ========== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК МЕНЮ ==========
+        const tabs = {
+            dashboard: renderDashboard,
+            calendar: renderCalendar,
+            summary: renderSummaryTab,
+            'create-meeting': renderCreateMeetingTab,
+            backup: renderBackupTab,
+            settings: renderSettingsTab
+        };
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active'));
+                item.classList.add('active');
+                const tab = item.dataset.tab;
+                tabs[tab]();
+                if (window.innerWidth <= 768) {
+                    document.getElementById('menu').classList.remove('open');
+                    document.getElementById('overlay').classList.remove('active');
+                    document.getElementById('burgerBtn').innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+        });
+
+        // Бургер-меню
+        const burgerBtn = document.getElementById('burgerBtn');
+        const menu = document.getElementById('menu');
+        const overlay = document.getElementById('overlay');
+        function toggleMenu() {
+            menu.classList.toggle('open');
+            overlay.classList.toggle('active');
+            burgerBtn.innerHTML = menu.classList.contains('open') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        }
+        burgerBtn.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+
+        // Инициализация
+        renderDashboard();
+        updateProfileUI();
     </script>
 </body>
 </html>
