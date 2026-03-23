@@ -171,7 +171,9 @@
             z-index: 999;
         }
         @media (max-width: 768px) {
-            .burger { display: flex; }
+            .burger { 
+                display: flex; 
+            }
             .menu {
                 position: fixed;
                 top: 0;
@@ -492,6 +494,42 @@
             background-color: var(--bg);
             color: var(--text);
         }
+        .edit-assignment-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.6rem;
+            font-size: 0.8rem;
+        }
+        .edit-assignment-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: var(--surface);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+        }
         @media (max-width: 768px) {
             .calendar-grid {
                 grid-template-columns: repeat(7, minmax(40px, 1fr));
@@ -526,6 +564,30 @@
     </div>
 
     <div class="content" id="content"></div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Редактировать поручение</h3>
+            <form id="editAssignmentForm">
+                <div class="form-group">
+                    <label>Ответственный</label>
+                    <select id="editResponsible" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Срок исполнения</label>
+                    <input type="date" id="editDeadline">
+                </div>
+                <div class="form-group">
+                    <label>Результат</label>
+                    <textarea id="editResult" rows="3"></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit">Сохранить</button>
+                    <button type="button" id="closeModal" class="secondary">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         // ==================== ХРАНИЛИЩА ====================
@@ -676,9 +738,9 @@
         }
         function exportAssignmentsToCSV(assigns) {
             if (!assigns || assigns.length === 0) { alert('Нет данных'); return; }
-            const keys = Object.keys(assigns[0]);
+            const keys = ['id', 'date', 'direction', 'responsible', 'text', 'deadline', 'result', 'status'];
             const header = keys.join(';');
-            const rows = assigns.map(a => keys.map(k => a[k]).join(';')).join('\n');
+            const rows = assigns.map(a => keys.map(k => a[k] || '').join(';')).join('\n');
             const content = header + '\n' + rows;
             const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -815,6 +877,43 @@
             render();
         }
 
+        // ========== РЕДАКТИРОВАНИЕ ПОРУЧЕНИЙ ==========
+        let currentEditAssignmentId = null;
+        function openEditModal(assignmentId) {
+            const assignment = assignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+            currentEditAssignmentId = assignmentId;
+            const select = document.getElementById('editResponsible');
+            select.innerHTML = users.map(u => `<option value="${u}" ${assignment.responsible === u ? 'selected' : ''}>${u}</option>`).join('');
+            document.getElementById('editDeadline').value = assignment.deadline || '';
+            document.getElementById('editResult').value = assignment.result || '';
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        document.getElementById('editAssignmentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const assignment = assignments.find(a => a.id === currentEditAssignmentId);
+            if (assignment) {
+                assignment.responsible = document.getElementById('editResponsible').value;
+                assignment.deadline = document.getElementById('editDeadline').value;
+                assignment.result = document.getElementById('editResult').value;
+                saveAssignments(assignments);
+                document.getElementById('editModal').classList.remove('active');
+                // Обновить текущий вид
+                const currentTab = document.querySelector('.menu-item.active')?.dataset.tab;
+                if (currentTab === 'summary') {
+                    renderSummaryTab();
+                } else if (currentTab === 'calendar') {
+                    renderCalendar();
+                } else {
+                    renderDashboard();
+                }
+            }
+        });
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('editModal').classList.remove('active');
+        });
+
         // ========== СВОД ПОРУЧЕНИЙ ==========
         let summaryMode = 'meetings';
         function renderSummaryTab() {
@@ -898,18 +997,32 @@
                         <button type="submit"><i class="fas fa-plus"></i> Добавить</button>
                     </form>
                     <h3>Список поручений</h3>
-                    <div class="table-wrapper"> <table> <thead> <tr><th>ID</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th></tr> </thead> <tbody id="assignBody">
-                        ${meetingAssignments.map(a => `
-                             <tr>
-                                <td>${a.id}</td>
-                                <td>${a.responsible}</td>
-                                <td>${a.text}</td>
-                                <td>${a.deadline||''}</td>
-                                <td>${a.result||''}</td>
-                                <td><select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">${statuses.map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
-                             </tr>
-                        `).join('')}
-                    </tbody> </table> </div>
+                    <div class="table-wrapper">\\
+                        <table>
+                            <thead>\\
+                                <th>ID</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th><th>Действия</th>
+                            </thead>
+                            <tbody id="assignBody">
+                                ${meetingAssignments.map(a => `
+                                    <tr>
+                                        <td>${a.id}</td>
+                                        <td>${a.responsible}</td>
+                                        <td>${a.text}</td>
+                                        <td>${a.deadline||''}</td>
+                                        <td>${a.result||''}</td>
+                                        <td>
+                                            <select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">
+                                                ${statuses.map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button class="edit-assignment-btn" onclick="openEditModal('${a.id}')"><i class="fas fa-edit"></i> Редакт.</button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
             document.getElementById('content').innerHTML = html;
@@ -934,21 +1047,33 @@
                     <h2>Направление: ${directionName}</h2>
                     <div class="breadcrumbs"><span class="breadcrumb-item" onclick="window.goBackToSummary()">← Назад к направлениям</span></div>
                     <div class="button-group"><button class="success" onclick="exportAssignmentsToCSV(${JSON.stringify(dirAssignments).replace(/"/g, '&quot;')})"><i class="fas fa-file-excel"></i> Выгрузить</button></div>
-                    <div class="table-wrapper"> <table> <thead> <tr><th>ID</th><th>Дата</th><th>Встреча</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th></tr> </thead> <tbody>
-                        ${dirAssignments.map(a => {
-                            const m = meetings.find(m=>m.id===a.meetingId);
-                            return `<tr>
-                                <td>${a.id}</td>
-                                <td>${a.date}</td>
-                                <td>${m?m.title:''}</td>
-                                <td>${a.responsible}</td>
-                                <td>${a.text}</td>
-                                <td>${a.deadline||''}</td>
-                                <td>${a.result||''}</td>
-                                <td><select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">${statuses.map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
-                            </tr>`;
-                        }).join('')}
-                    </tbody> </table> </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><th>ID</th><th>Дата</th><th>Встреча</th><th>Ответственный</th><th>Текст</th><th>Срок</th><th>Результат</th><th>Статус</th><th>Действия</th></thead>
+                            <tbody>
+                                ${dirAssignments.map(a => {
+                                    const m = meetings.find(m=>m.id===a.meetingId);
+                                    return `<tr>
+                                        <td>${a.id}</td>
+                                        <td>${a.date}</td>
+                                        <td>${m?m.title:''}</td>
+                                        <td>${a.responsible}</td>
+                                        <td>${a.text}</td>
+                                        <td>${a.deadline||''}</td>
+                                        <td>${a.result||''}</td>
+                                        <td>
+                                            <select class="status-select" onchange="updateAssignmentStatus('${a.id}', this.value)">
+                                                ${statuses.map(s=>`<option ${a.status===s?'selected':''}>${s}</option>`).join('')}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button class="edit-assignment-btn" onclick="openEditModal('${a.id}')"><i class="fas fa-edit"></i> Редакт.</button>
+                                        </td>
+                                    </tr>`;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             `;
             document.getElementById('content').innerHTML = html;
